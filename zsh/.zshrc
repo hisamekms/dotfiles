@@ -91,7 +91,7 @@ precmd() {
     case $TERM in
         *xterm*|rxvt|(dt|k|E)term)
         print -Pn "\e]2;[%~]\a"    
-	;;
+  ;;
         # screen)
         #      #print -Pn "\e]0;[%n@%m %~] [%l]\a"
         #      print -Pn "\e]0;[%n@%m %~]\a"
@@ -109,6 +109,4 @@ precmd() {
 alias history='history -E'
 
 # cdコマンド実行後、lsを実行する
-function cd() {
-  builtin cd $@ && ls;
-}
+chpwd() ls
