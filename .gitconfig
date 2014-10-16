@@ -1,0 +1,13 @@
+[user]
+	name = Shinnosuke OOYAMA
+	email = s.ooyama1003@gmail.com
+[core]
+	autocrlf = input
+[alias]
+	c = commit -v
+	o = checkout
+	pl = pull
+	ps = push
+	psu = push -u
+	r = remote
+	b = checkout -b
