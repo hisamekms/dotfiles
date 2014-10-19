@@ -115,12 +115,10 @@ export PATH=$PATH:~/go/bin
 export GOPATH=~/go
 
 # Install plugins
-if [ -d ~/.zsh/plugins ]; then
-  for plugin in ~/.zsh/plugins/*.zsh; do
-    if [ -f "$plugin" ]; then
-        echo "Loading plugin: ${plugin##*/}"
-        source "$plugin"
-    fi
+if [ -d ~/.zsh ]; then
+  for plugin in `find ~/.zsh/ -name '*.zsh' -type f`; do
+    echo "Loading plugin: ${plugin##*/}"
+    source "$plugin"
   done
 fi
 
