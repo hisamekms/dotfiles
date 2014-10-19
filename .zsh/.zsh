@@ -1,0 +1,1 @@
+/Users/ooyamashinnosuke/dotfiles/.zsh

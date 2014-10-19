@@ -11,3 +11,5 @@
 	psu = push -u
 	r = remote
 	b = checkout -b
+[ghq]
+	root = /Users/ooyamashinnosuke/.ghq

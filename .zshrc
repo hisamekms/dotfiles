@@ -99,7 +99,6 @@ precmd() {
     esac
 }
 
-
 # ------------------------------
 # Other Settings
 # ------------------------------
@@ -110,3 +109,18 @@ alias history='history -E'
 
 # cdコマンド実行後、lsを実行する
 chpwd() ls
+
+export PATH=/usr/local/bin:$PATH
+export PATH=$PATH:~/go/bin
+export GOPATH=~/go
+
+# Install plugins
+if [ -d ~/.zsh/plugins ]; then
+  for plugin in ~/.zsh/plugins/*.zsh; do
+    if [ -f "$plugin" ]; then
+        echo "Loading plugin: ${plugin##*/}"
+        source "$plugin"
+    fi
+  done
+fi
+

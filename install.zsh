@@ -1,11 +1,12 @@
 #!/bin/zsh
-RootDir=~/dotfiles
+ROOT_DIR=`pwd`
+EXCLUDES=('.gitignore' '.git')
 
 # Optional settings
 for opt in $@; do
   case $opt in
     '-f'|'--force')
-      Force=1
+      force=1
       shift 1
       ;;
     -*)
@@ -15,28 +16,19 @@ for opt in $@; do
   esac
 done
 
-if [ ! -e $RootDir ]; then
-  echo '~/dotfiles does not exist.' 1>&2
-  exit 1
-fi
-
-CreatedFiles=()
-for dotfile in `find $RootDir -name '.*' -type file`; do
-  if [ $dotfile != '.gitignore' ]; then
-    Sl=~/`basename $dotfile`
-    # if [ ls ~/.zshrc | wc = 1 ]; then
-    #   echo already exists
-    # fi
-    if [ -e $Sl ]; then
-      if [ ! $Force ]; then 
-        # echo "$Sl already exists!" 1>&2
-        # exit 1
+# Install dotfiles
+createdFiles=()
+for dotfile in `find $ROOT_DIR -maxdepth 1 -name '.*'`; do
+  filename=`basename ${dotfile}`
+  if [[ ${EXCLUDES[(r)${filename}]} != ${filename} ]]; then
+    if [ -e ~/${filename} ]; then
+      if [ ! $force ]; then 
         while true; do
-          read Ans\?"`basename $dotfile` already exists.Overwrite it? [Y/n]"
-          case $Ans in
-            [Yy]* )
-              ln -s -f $dotfile $Sl
-              CreatedFiles=($CreatedFiles `basename $dotfile`)
+          read ans\?"${filename} already exists.Overwrite it? [Y/n]"
+          case $ans in
+            ''|[Yy]* )
+              ln -s -f $dotfile ~/${filename}
+              createdFiles=($createdFiles ${filename})
               break;
               ;;
             [Nn]* )
@@ -48,17 +40,17 @@ for dotfile in `find $RootDir -name '.*' -type file`; do
           esac
         done
       else
-        ln -s -f $dotfile $Sl
-        CreatedFiles=($CreatedFiles `basename $dotfile`)
+        ln -s -f $dotfile ~/${filename}
+        createdFiles=($createdFiles ${filename})
       fi
     else
-      ln -s -f $dotfile $Sl
-      CreatedFiles=($CreatedFiles `basename $dotfile`)
+      ln -s -f $dotfile ~/${filename}
+      createdFiles=($createdFiles ${filename})
     fi
   fi
 done
 
-if [ $#CreatedFiles != 0 ]; then
+if [ ${#CreatedFiles} != 0 ]; then
   echo $CreatedFiles 1>&2
 fi
 exit 0
