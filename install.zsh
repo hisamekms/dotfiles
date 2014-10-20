@@ -20,33 +20,39 @@ done
 createdFiles=()
 for dotfile in `find $ROOT_DIR -name '.*'`; do
   filename=`basename ${dotfile}`
-  if [[ ${EXCLUDES[(r)${filename}]} != ${filename} ]]; then
-    if [ -e ~/${filename} ]; then
-      if [ ! $force ]; then 
-        while true; do
-          read ans\?"${filename} already exists.Overwrite it? [Y/n]"
-          case $ans in
-            ''|[Yy]* )
-              ln -s -f $dotfile ~/${filename}
-              createdFiles=($createdFiles ${filename})
-              break;
-              ;;
-            [Nn]* )
-              break;
-              ;;
-            * )
-              echo 'Please answer yes or no.'
-              ;;
-          esac
-        done
-      else
-        ln -s -f $dotfile ~/${filename}
-        createdFiles=($createdFiles ${filename})
-      fi
+  if [ -L ${dotfile} ]; then
+    continue
+  fi
+
+  if [[ ${EXCLUDES[(r)${filename}]} == ${filename} ]]; then
+    continue
+  fi
+
+  if [ -e ~/${filename} ]; then
+    if [ ! $force ]; then
+      while true; do
+        read ans\?"${filename} already exists.Overwrite it? [Y/n]"
+        case $ans in
+          ''|[Yy]* )
+            ln -s -f $dotfile ~/${filename}
+            createdFiles=($createdFiles ${filename})
+            break;
+            ;;
+          [Nn]* )
+            break;
+            ;;
+          * )
+            echo 'Please answer yes or no.'
+            ;;
+        esac
+      done
     else
       ln -s -f $dotfile ~/${filename}
       createdFiles=($createdFiles ${filename})
     fi
+  else
+    ln -s -f $dotfile ~/${filename}
+    createdFiles=($createdFiles ${filename})
   fi
 done
 
