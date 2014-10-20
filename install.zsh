@@ -1,6 +1,6 @@
 #!/bin/zsh
 ROOT_DIR=`pwd`
-EXCLUDES=('.gitignore' '.git')
+EXCLUDES=('.gitignore' '.git' '.gitkeep')
 
 # Optional settings
 for opt in $@; do
@@ -18,7 +18,7 @@ done
 
 # Install dotfiles
 createdFiles=()
-for dotfile in `find $ROOT_DIR -maxdepth 1 -name '.*'`; do
+for dotfile in `find $ROOT_DIR -name '.*'`; do
   filename=`basename ${dotfile}`
   if [[ ${EXCLUDES[(r)${filename}]} != ${filename} ]]; then
     if [ -e ~/${filename} ]; then

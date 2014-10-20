@@ -1,3 +1,5 @@
+[include]
+	path = .gitconfig.local
 [user]
 	name = Shinnosuke OOYAMA
 	email = s.ooyama1003@gmail.com
