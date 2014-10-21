@@ -2,3 +2,4 @@
 .zsh/local/*
 zsh/.zsh/.zsh
 peco/.oneliner/.oneliner
+git/.gitconfig.local

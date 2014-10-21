@@ -56,7 +56,7 @@ for dotfile in `find $ROOT_DIR -name '.*'`; do
   fi
 done
 
-if [ ${#CreatedFiles} != 0 ]; then
-  echo $CreatedFiles 1>&2
+if [ ${#createdFiles} != 0 ]; then
+  echo $createdFiles 1>&2
 fi
 exit 0
