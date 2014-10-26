@@ -13,6 +13,7 @@ setopt auto_pushd        # cd時にディレクトリスタックにpushdする
 setopt prompt_subst      # プロンプト定義内で変数置換やコマンド置換を扱う
 setopt notify            # バックグラウンドジョブの状態変化を即時報告する
 #setopt equals            # =commandを`which command`と同じ処理にする
+setopt AUTO_CD
 
 ### Complement ###
 autoload -U compinit; compinit # 補完機能を有効にする
@@ -34,11 +35,11 @@ setopt share_history      # 他のシェルのヒストリをリアルタイム�
 setopt hist_reduce_blanks # 余分なスペースを削除してヒストリに保存する
 
 # マッチしたコマンドのヒストリを表示できるようにする
-autoload history-search-end
-zle -N history-beginning-search-backward-end history-search-end
-zle -N history-beginning-search-forward-end history-search-end
-bindkey "^P" history-beginning-search-backward-end
-bindkey "^N" history-beginning-search-forward-end
+# autoload history-search-end
+# zle -N history-beginning-search-backward-end history-search-end
+# zle -N history-beginning-search-forward-end history-search-end
+# bindkey "^P" history-beginning-search-backward-end
+# bindkey "^N" history-beginning-search-forward-end
 
 # すべてのヒストリを表示する
 function history-all { history -E 1 }
@@ -105,7 +106,7 @@ precmd() {
 
 ### Aliases ###
 #時刻を表示させる
-alias history='history -E'
+# alias history='history -E'
 
 # cdコマンド実行後、lsを実行する
 chpwd() ls
