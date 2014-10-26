@@ -50,7 +50,7 @@ zle -N peco_select_history
 bindkey '^h' peco_select_history
 
 function peco-select-path() {
-  local filepath="$(find . | grep -v '/\.' | peco --prompt 'PATH>')"
+  local filepath="$(find . -maxdepth 5 | grep -v '/\.' | peco --prompt 'PATH>')"
   if [ "$LBUFFER" -eq "" ]; then
     if [ -d "$filepath" ]; then
       BUFFER="cd $filepath"
@@ -65,7 +65,7 @@ function peco-select-path() {
 }
 
 zle -N peco-select-path
-bindkey '^F' peco-select-path
+bindkey '^E' peco-select-path
 
 function peco-cd() {
   local filepath="$(find . -type d -maxdepth 5 | peco --prompt 'PATH>')"
@@ -74,4 +74,4 @@ function peco-cd() {
   zle clear-screen
 }
 zle -N peco-cd
-# bindkey '^f' peco-cd
+bindkey '^F' peco-cd
