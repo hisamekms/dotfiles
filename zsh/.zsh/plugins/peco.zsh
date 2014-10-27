@@ -31,7 +31,7 @@ function peco-src () {
   zle clear-screen
 }
 zle -N peco-src
-bindkey '^[' peco-src
+bindkey '^R' peco-src
 
 setopt hist_ignore_all_dups
 
@@ -47,7 +47,7 @@ function peco_select_history() {
   zle clear-screen
 }
 zle -N peco_select_history
-bindkey '^h' peco_select_history
+bindkey '^H' peco_select_history
 
 function peco-select-path() {
   local filepath="$(find . -maxdepth 5 | grep -v '/\.' | peco --prompt 'PATH>')"

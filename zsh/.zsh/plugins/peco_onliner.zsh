@@ -17,7 +17,7 @@ function _insert-oneliner() {
   fi
 }
 zle -N _insert-oneliner
-bindkey "^[i" _insert-oneliner
+bindkey "^pi" _insert-oneliner
 
 # pecoで選択したonelinerコマンドを表示
 function peco-search-oneliner() {
@@ -26,7 +26,7 @@ function peco-search-oneliner() {
   zle beginning-of-line
 }
 zle -N peco-search-oneliner
-bindkey "^po" peco-search-oneliner
+bindkey "^ps" peco-search-oneliner
 
 # コマンドライン上の可変パラメータ(%%HOGE)を置換
 function _kill-oneliner-param-forward() {
@@ -45,4 +45,4 @@ function _kill-oneliner-param-forward() {
   fi
 }
 zle -N _kill-oneliner-param-forward
-bindkey "^[j" _kill-oneliner-param-forward
+bindkey "^pj" _kill-oneliner-param-forward
