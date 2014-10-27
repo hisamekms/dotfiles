@@ -111,15 +111,19 @@ precmd() {
 # cdコマンド実行後、lsを実行する
 chpwd() ls
 
-export PATH=/usr/local/bin:$PATH
-export PATH=$PATH:~/go/bin
-export GOPATH=~/go
-
 # Install plugins
 if [ -d ~/.zsh ]; then
   for plugin in `find ~/.zsh/ -name '*.zsh' -type f`; do
     echo "Loading plugin: ${plugin##*/}"
     source "$plugin"
+  done
+fi
+
+# Compile SSH Config
+if [ -d ~/.ssh.conf.d ]; then
+  rm ~/.ssh/config
+  for sshConf in `find ~/.ssh.conf.d/ -type f`; do
+    cat $sshConf >> ~/.ssh/config
   done
 fi
 
