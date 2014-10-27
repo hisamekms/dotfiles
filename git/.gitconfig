@@ -1,7 +1,7 @@
 [include]
 	path = .gitconfig.local
 [user]
-	name = Shinnosuke OOYAMA
+	name = Shinnosuke Ooyama
 	email = s.ooyama1003@gmail.com
 [core]
 	autocrlf = input
@@ -14,4 +14,4 @@
 	r = remote
 	b = checkout -b
 [ghq]
-	root = /Users/ooyamashinnosuke/.ghq
+	root = ~/.ghq
