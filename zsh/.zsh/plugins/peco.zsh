@@ -50,7 +50,7 @@ zle -N peco_select_history
 bindkey '^H' peco_select_history
 
 function peco-select-path() {
-  local filepath="$(find . -maxdepth 5 | grep -v '/\.' | peco --prompt 'PATH>')"
+  local filepath="$(find . -maxdepth 5 | peco --prompt 'PATH>')"
   if [ "$LBUFFER" -eq "" ]; then
     if [ -d "$filepath" ]; then
       BUFFER="cd $filepath"
