@@ -75,3 +75,12 @@ function peco-cd() {
 }
 zle -N peco-cd
 bindkey '^F' peco-cd
+
+function ghq-rm () {
+  ghq list --full-path | peco | xargs rm -r
+}
+
+function ghs-install () {
+  [ "$#" -eq 0 ] && echo "Usage : gpi QUERY" && return 1
+  ghs "$@" | peco | awk '{print $1}' | ghq import
+}
