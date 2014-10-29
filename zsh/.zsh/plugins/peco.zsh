@@ -50,7 +50,7 @@ zle -N peco_select_history
 bindkey '^H' peco_select_history
 
 function peco-select-path() {
-  local filepath="$(find . -maxdepth 5 | grep -v '/\.' | peco --prompt 'PATH>')"
+  local filepath="$(find . -maxdepth 5 | peco --prompt 'PATH>')"
   if [ "$LBUFFER" -eq "" ]; then
     if [ -d "$filepath" ]; then
       BUFFER="cd $filepath"
@@ -75,3 +75,12 @@ function peco-cd() {
 }
 zle -N peco-cd
 bindkey '^F' peco-cd
+
+function ghq-rm () {
+  ghq list --full-path | peco | xargs rm -r
+}
+
+function ghs-install () {
+  [ "$#" -eq 0 ] && echo "Usage : gpi QUERY" && return 1
+  ghs "$@" | peco | awk '{print $1}' | ghq import
+}
