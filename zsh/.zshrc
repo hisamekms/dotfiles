@@ -124,6 +124,7 @@ if [ -d ~/.ssh.conf.d ]; then
   rm ~/.ssh/config
   for sshConf in `find ~/.ssh.conf.d/ -type f`; do
     cat $sshConf >> ~/.ssh/config
+    echo '' >> ~/.ssh/config
   done
 fi
 
