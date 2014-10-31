@@ -126,5 +126,6 @@ if [ -d ~/.ssh.conf.d ]; then
     cat $sshConf >> ~/.ssh/config
     echo '' >> ~/.ssh/config
   done
+  chmod 600 ~/.ssh/config
 fi
 
