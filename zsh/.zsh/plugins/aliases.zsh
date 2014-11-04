@@ -11,5 +11,3 @@ alias -g .....=../../../..
 alias -g ......=../../../../..
 
 alias reload="exec -l $SHELL"
-
-alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
