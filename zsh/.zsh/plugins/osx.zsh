@@ -4,6 +4,9 @@ alias symbolicatecrash="/Applications/Xcode.app/Contents/SharedFrameworks/DTDevi
 
 function brew-cask-upgrade() {
   for c in `brew cask list`; do
-    ! brew cask info $c | grep -qF "Not installed" || brew cask install $c
+    if brew cask info $c | grep -qF "Not Installed"; then
+      brew cask uninstall $c
+      brew cask install $c
+    fi
   done
 }
