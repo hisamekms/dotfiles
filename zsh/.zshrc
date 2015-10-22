@@ -1,12 +1,53 @@
+#DOTFILES_BASE=${HOME}/.dotfiles
+DOTFILES_BASE=${HOME}/.ghq/github.com/hisamekms/dotfiles
+ANTIGEN_BASE=${HOME}/.antigen
+
+# ------------------------------
+# Antigen Settings
+# ------------------------------
+source ${ANTIGEN_BASE}/antigen.zsh
+
+antigen use oh-my-zsh
+antigen bundle git
+antigen bundle osx
+antigen bundle brew
+antigen bundle brew-cask
+antigen bundle cp
+
+antigen bundle zsh-users/zsh-syntax-highlighting
+
+# antigen theme dogrocker/oh-my-zsh-powerline-cute-theme cute-theme
+antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
+
+BULLETTRAIN_TIME_SHOW=false
+BULLETTRAIN_CONTEXT_SHOW=true
+BULLETTRAIN_RUBY_SHOW=false
+
+POWERLINE_HIDE_HOST_NAME="true"
+POWERLINE_HIDE_GIT_PROMPT_STATUS="true"
+POWERLINE_SHOW_GIT_ON_RIGHT="true"
+
+antigen apply
+
+# ------------------------------
+# Install My Plugins
+# ------------------------------
+if [ -d ${DOTFILES_BASE}/zsh ]; then
+  for plugin in `find ${DOTFILES_BASE}/zsh/plugins -name '*.zsh' -type f`; do
+    echo "Loading plugin: ${plugin##*/}"
+    source "$plugin"
+  done
+
+  for plugin in `find ${DOTFILES_BASE}/zsh/local -name '*.zsh' -type f`; do
+    echo "Loading plugin: ${plugin##*/}"
+    source "$plugin"
+  done
+fi
+
 # ------------------------------
 # General Settings
 # ------------------------------
-export EDITOR=vim        # エディタをvimに設定
-export LANG=ja_JP.UTF-8  # 文字コードをUTF-8に設定
-export KCODE=u           # KCODEにUTF-8を設定
-export AUTOFEATURE=true  # autotestでfeatureを動かす
-
-bindkey -v              # キーバインドをviモードに設定
+# bindkey -v              # キーバインドをviモードに設定
 
 setopt auto_pushd        # cd時にディレクトリスタックにpushdする
 #setopt correct           # コマンドのスペルを訂正する
@@ -25,9 +66,9 @@ bindkey "^[[Z" reverse-menu-complete  # Shift-Tabで補完候補を逆順する(
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # 補完時に大文字小文字を区別しない
 
 ### History ###
-HISTFILE=~/.zsh_history   # ヒストリを保存するファイル
-HISTSIZE=10000            # メモリに保存されるヒストリの件数
-SAVEHIST=10000            # 保存されるヒストリの件数
+export HISTFILE=~/.zsh_history   # ヒストリを保存するファイル
+export HISTSIZE=10000            # メモリに保存されるヒストリの件数
+export SAVEHIST=10000            # 保存されるヒストリの件数
 setopt bang_hist          # !を使ったヒストリ展開を行う(d)
 setopt extended_history   # ヒストリに実行時間も保存する
 setopt hist_ignore_dups   # 直前と同じコマンドはヒストリに追加しない
@@ -40,92 +81,30 @@ setopt hist_reduce_blanks # 余分なスペースを削除してヒストリに�
 # zle -N history-beginning-search-forward-end history-search-end
 # bindkey "^P" history-beginning-search-backward-end
 # bindkey "^N" history-beginning-search-forward-end
-
+#
 # すべてのヒストリを表示する
 function history-all { history -E 1 }
-
-# ------------------------------
-# Look And Feel Settings
-# ------------------------------
-### Ls Color ###
-# 色の設定
-export LSCOLORS=Exfxcxdxbxegedabagacad
-# 補完時の色の設定
-export LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-# ZLS_COLORSとは？
-export ZLS_COLORS=$LS_COLORS
-# lsコマンド時、自動で色がつく(ls -Gのようなもの？)
-export CLICOLOR=true
-# 補完候補に色を付ける
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-
-### Prompt ###
-# プロンプトに色を付ける
-autoload -U colors; colors
-# 一般ユーザ時
-tmp_prompt="%F{cyan}[%n@%D{%m/%d %T}]%f "
-#tmp_prompt="%{${fg[cyan]}%}%n%# %{${reset_color}%}"
-tmp_prompt2="%{${fg[cyan]}%}%_> %{${reset_color}%}"
-tmp_rprompt="%{${fg[green]}%}[%~]%{${reset_color}%}"
-tmp_sprompt="%{${fg[yellow]}%}%r is correct? [Yes, No, Abort, Edit]:%{${reset_color}%}"
-
-# rootユーザ時(太字にし、アンダーバーをつける)
-if [ ${UID} -eq 0 ]; then
-  tmp_prompt="%B%U${tmp_prompt}%u%b"
-  tmp_prompt2="%B%U${tmp_prompt2}%u%b"
-  tmp_rprompt="%B%U${tmp_rprompt}%u%b"
-  tmp_sprompt="%B%U${tmp_sprompt}%u%b"
-fi
-
-PROMPT=$tmp_prompt    # 通常のプロンプト
-PROMPT2=$tmp_prompt2  # セカンダリのプロンプト(コマンドが2行以上の時に表示される)
-RPROMPT=$tmp_rprompt  # 右側のプロンプト
-SPROMPT=$tmp_sprompt  # スペル訂正用プロンプト
-# SSHログイン時のプロンプト
-[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-  PROMPT="%{${fg[white]}%}${HOST%%.*} ${PROMPT}"
-;
-
-#Title
-precmd() {
-    [[ -t 1 ]] || return
-    case $TERM in
-        *xterm*|rxvt|(dt|k|E)term)
-        print -Pn "\e]2;[%~]\a"    
-  ;;
-        # screen)
-        #      #print -Pn "\e]0;[%n@%m %~] [%l]\a"
-        #      print -Pn "\e]0;[%n@%m %~]\a"
-        #      ;;
-    esac
-}
 
 # ------------------------------
 # Other Settings
 # ------------------------------
 
-### Aliases ###
-#時刻を表示させる
-# alias history='history -E'
-
 # cdコマンド実行後、lsを実行する
 chpwd() ls
 
-# Install plugins
-if [ -d ~/.zsh ]; then
-  for plugin in `find ~/.zsh/ -name '*.zsh' -type f`; do
-    echo "Loading plugin: ${plugin##*/}"
-    source "$plugin"
-  done
-fi
-
 # Compile SSH Config
-if [ -d ~/.ssh.conf.d ]; then
-  rm ~/.ssh/config
-  for sshConf in `find ~/.ssh.conf.d/ -type f`; do
-    cat $sshConf >> ~/.ssh/config
-    echo '' >> ~/.ssh/config
-  done
-  chmod 600 ~/.ssh/config
-fi
+build_ssh_config() {
+  local SSH_CONF_HOME=${DOTFILES_BASE}/ssh/conf.d
+  if [ -d ${SSH_CONF_HOME} ]; then
+    rm ${HOME}/.ssh/config
+    for sshConf in `find ${SSH_CONF_HOME} -type f`; do
+      cat $sshConf >> ~/.ssh/config
+      echo '' >> ~/.ssh/config
+    done
+    chmod 600 ~/.ssh/config
+  fi
+}
 
+reload_dotfiles() {
+  ${DOTFILES_BASE}/bootstrap.sh
+}
