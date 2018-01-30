@@ -1,1 +1,0 @@
-VBoxManage controlvm boot2docker-vm natpf1 ubuntu,tcp,localhost,%port%,,%port%	#Routing a port of boot2docker vm
