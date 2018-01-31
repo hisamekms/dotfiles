@@ -1,18 +1,27 @@
 #!/usr/local/bin/fish
 set fish_config ~/.config/fish/config.fish
+set fishfile ~/.config/fish/fishfile
 set CI "\e[32m"
 set CD "\e[m"
 
 brew bundle
 
 if test -L $fish_config
-  echo symlink
 else
-  echo -e $CI"Set fish_config symlink..."$CD
+  echo -e $CI"Create fish_config symlink..."$CD
   if test -f $fish_config
     rm $fish_config
   end
   ln -s (pwd)/config.fish $fish_config
+end
+
+if test -L $fishfile
+else
+  echo -e $CI"Create fishfile symlink..."$CD
+  if test -f $fishfile
+    rm $fishfile
+  end
+  ln -s (pwd)/fishfile $fishfile
 end
 
 if command -v anyenv >/dev/null
