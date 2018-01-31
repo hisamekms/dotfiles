@@ -8,11 +8,12 @@ brew bundle
 
 if test -L $fish_config
 else
-  echo -e $CI"Create fish_config symlink..."$CD
+  echo -e $CI"Create config.fish symlink..."$CD
   if test -f $fish_config
     rm $fish_config
   end
   ln -s (pwd)/config.fish $fish_config
+  source $fish_config
 end
 
 if test -L $fishfile
