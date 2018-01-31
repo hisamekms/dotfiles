@@ -1,5 +1,5 @@
 #!/bin/bash
-dotfile_dir="~/.dotfiles"
+dotfile_dir="$HOME/.dotfiles"
 CI="\e[32m"
 CD="\e[m"
 
