@@ -71,3 +71,10 @@ else
   echo -e $CI"Install ghq..."$CD
   go get github.com/motemen/ghq
 end
+
+set atom_package_count (math (apm list --installed --bare | grep -Ev '^$' | wc -l))
+
+if test $atom_package_count -eq 0
+  echo -e $CI"Install atom packages"$CD
+  apm install --packages-file (pwd)/atom-packages
+end
