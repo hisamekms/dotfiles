@@ -1,6 +1,3 @@
-[user]
-	name = hisamekms
-	email = s.ooyama1003@gmail.com
 [include]
     path = .gitconfig.local
 [ghq]
