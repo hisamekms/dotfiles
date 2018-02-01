@@ -1,10 +1,11 @@
 #!/usr/local/bin/fish
 set fish_config ~/.config/fish/config.fish
 set fishfile ~/.config/fish/fishfile
+set DOTFILES_HOME ~/.dotfiles
 set CI "\e[32m"
 set CD "\e[m"
 
-brew bundle
+brew bundle --file=$DOTFILES_HOME/Brewfile
 
 if test -L $fish_config
 else
@@ -12,7 +13,7 @@ else
   if test -f $fish_config
     rm $fish_config
   end
-  ln -s (pwd)/config.fish $fish_config
+  ln -s $DOTFILES_HOME/config.fish $fish_config
   source $fish_config
 end
 
@@ -22,7 +23,8 @@ else
   if test -f $fishfile
     rm $fishfile
   end
-  ln -s (pwd)/fishfile $fishfile
+  ln -s $DOTFILES_HOME/fishfile $fishfile
+  fisher
 end
 
 if command -v anyenv >/dev/null
@@ -75,6 +77,13 @@ end
 set atom_package_count (math (apm list --installed --bare | grep -Ev '^$' | wc -l))
 
 if test $atom_package_count -eq 0
-  echo -e $CI"Install atom packages"$CD
+  echo -e $CI"Install atom packages..."$CD
   apm install --packages-file (pwd)/atom-packages
+end
+
+if test -d (ghq root)/github.com/powerline/fonts
+else
+  echo -e $CI"Install powerline fonts..."$CD
+  ghq get powerline/fonts
+  sh (ghq root)/github.com/powerline/fonts/install.sh
 end
