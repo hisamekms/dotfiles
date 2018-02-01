@@ -5,7 +5,7 @@ set DOTFILES_HOME ~/.dotfiles
 set CI "\e[32m"
 set CD "\e[m"
 
-brew bundle --file=$DOTFILES_HOME/Brewfile
+# brew bundle --file=$DOTFILES_HOME/Brewfile
 
 if test -L $fish_config
 else
@@ -86,4 +86,13 @@ else
   echo -e $CI"Install powerline fonts..."$CD
   ghq get powerline/fonts
   sh (ghq root)/github.com/powerline/fonts/install.sh
+end
+
+echo -e $CI"Create or replace dotfile symlinks..."$CD
+for path in $DOTFILES_HOME/dotfiles/*
+  set file (string replace -r "^.+/([^/]+)\$" "\$1" $path)
+  test -e $HOME/.$file; and rm $HOME/.$file
+
+  ln -s $path $HOME/.$file
+  echo $path to $HOME/.$file
 end
