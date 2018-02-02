@@ -4,3 +4,4 @@
 zsh/.zsh/.zsh
 peco/.oneliner/.oneliner
 git/.gitconfig.local
+config.local.fish

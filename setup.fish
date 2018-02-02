@@ -5,7 +5,7 @@ set DOTFILES_HOME ~/.dotfiles
 set CI "\e[32m"
 set CD "\e[m"
 
-# brew bundle --file=$DOTFILES_HOME/Brewfile
+brew bundle --file=$DOTFILES_HOME/Brewfile
 
 if test -L $fish_config
 else

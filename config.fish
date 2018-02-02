@@ -1,8 +1,15 @@
-set PATH ~/.anyenv/bin $PATH
-eval (anyenv init - | source)
-set PATH ~/go/bin $PATH
-set -U GHQ_SELECTOR peco
 set DOTFILES_HOME ~/.dotfiles
+set PATH ~/.anyenv/bin $PATH
+set PATH ~/go/bin $PATH
+eval (anyenv init - | source)
+eval (direnv hook fish)
+
+set -U GHQ_SELECTOR peco
+set -x EDITOR vim
+
+if test -e $DOTFILES_HOME/config.local.fish
+  source $DOTFILES_HOME/config.local.fish
+end
 
 function update
   fish $DOTFILES_HOME/setup.fish
