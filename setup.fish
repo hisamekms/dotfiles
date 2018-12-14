@@ -7,6 +7,10 @@ set CD "\e[m"
 
 brew bundle --file=$DOTFILES_HOME/Brewfile
 
+if not functions -q fisher
+    curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
+end
+
 if test -L $fish_config
 else
   echo -e $CI"Create config.fish symlink..."$CD
@@ -74,11 +78,13 @@ else
   go get github.com/motemen/ghq
 end
 
-set atom_package_count (math (apm list --installed --bare | grep -Ev '^$' | wc -l))
+if command -v atom >/dev/null
+  set atom_package_count (math (apm list --installed --bare | grep -Ev '^$' | wc -l))
 
-if test $atom_package_count -eq 0
-  echo -e $CI"Install atom packages..."$CD
-  apm install --packages-file (pwd)/atom-packages
+  if test $atom_package_count -eq 0
+    echo -e $CI"Install atom packages..."$CD
+    apm install --packages-file (pwd)/atom-packages
+  end
 end
 
 if test -d (ghq root)/github.com/powerline/fonts
