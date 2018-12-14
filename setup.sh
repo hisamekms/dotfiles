@@ -13,7 +13,7 @@ else
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
-if command -v fish ; then
+if command -v fish >/dev/null ; then
   :
 else
   echo -e $CI"Install frew..."$CD
