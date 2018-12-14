@@ -1,8 +1,14 @@
 set DOTFILES_HOME ~/.dotfiles
 set PATH ~/.anyenv/bin $PATH
 set PATH ~/go/bin $PATH
-eval (anyenv init - | source)
-eval (direnv hook fish)
+
+if command -v anyenv >/dev/null
+  eval (anyenv init - fish | source)
+end
+
+if command -v direnv >/dev/null
+  eval (direnv hook fish)
+end
 
 set -U GHQ_SELECTOR peco
 set -x EDITOR vim
