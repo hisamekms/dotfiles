@@ -17,18 +17,6 @@ if test -e $DOTFILES_HOME/config.local.fish
   source $DOTFILES_HOME/config.local.fish
 end
 
-function update
-  fish $DOTFILES_HOME/setup.fish
-end
-
-function save_atom_packages
-  apm list --installed --bare > $DOTFILES_HOME/atom-packages
-end
-
-function install_atom_packages
-  apm install --packages-file $DOTFILES_HOME/atom-packages
-end
-
 function __peco_z
   set -l query (commandline)
 
