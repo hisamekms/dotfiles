@@ -57,3 +57,18 @@ function fish_user_key_bindings
 end
 
 mise activate fish | source
+
+# Git
+abbr -a g 'git'
+abbr -a ga 'git add'
+abbr -a gaa 'git add -A'
+abbr -a gcm 'git commit'
+abbr -a gst 'git status'
+abbr -a gpl 'git pull'
+abbr -a gps 'git push'
+abbr -a gplr 'git pull --rebase'
+abbr -a gpr 'git push --rebase'
+abbr -a gplr 'git pull --rebase'
+
+# Others
+abbr -a m 'mise'
