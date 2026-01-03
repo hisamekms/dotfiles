@@ -79,7 +79,7 @@ mise activate fish | source
 abbr -a g 'git'
 abbr -a ga 'git add'
 abbr -a gaa 'git add -A'
-abbr -a gcm 'git commit'
+abbr -a gcm 'git commit -m'
 abbr -a gst 'git status'
 abbr -a gpl 'git pull'
 abbr -a gps 'git push'
