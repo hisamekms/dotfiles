@@ -2,6 +2,8 @@
 bun = "latest"
 chezmoi = "latest"
 ghq = "latest"
+go = "latest"
+"go:github.com/satococoa/wtp/v2/cmd/wtp" = "latest"
 neovim = "latest"
 "npm:@openai/codex" = "latest"
 peco = "latest"
