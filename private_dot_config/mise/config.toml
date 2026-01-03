@@ -1,8 +1,12 @@
 [tools]
 bun = "latest"
 chezmoi = "latest"
+ghq = "latest"
+neovim = "latest"
 "npm:@openai/codex" = "latest"
 peco = "latest"
+tmux = "latest"
+usage = "latest"
 
 [env]
 MISE_NPM_PACKAGE_MANAGER = "bun"
