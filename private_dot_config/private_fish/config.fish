@@ -68,9 +68,9 @@ end
 function fish_user_key_bindings
   # unbind fish-ghq key bindings
   bind -e \cg
-  bind \cr '__ghq_crtl_g'
+  bind \cr '__ghq_ctrl_g'
   bind \cq '__peco_z'
-  bind \ch 'peco_select_history (commandline -b)'
+  bind \ch peco_select_history
 end
 
 mise activate fish | source
