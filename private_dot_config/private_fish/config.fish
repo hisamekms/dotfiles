@@ -48,27 +48,17 @@ function peco_select_history
   end
 end
 
-function __ghq_ctrl_g
-  set -l query (commandline)
-
-  set -l flags
-  if test -n "$query"
-    set flags --query "$query"
-  end
-
-  set -l repo (ghq list -p | peco --tty (tty) $flags)
-
-  if test -n "$repo"
-    cd "$repo"
-    commandline -r ''
-    commandline -f repaint
-  end
+function ghq_peco
+    set -l repo (ghq list --full-path | peco)
+    if test -n "$repo"
+        cd "$repo"
+    end
 end
 
 function fish_user_key_bindings
   # unbind fish-ghq key bindings
   bind -e \cg
-  bind \cr '__ghq_ctrl_g'
+  bind \cr 'ghq_peco'
   bind \cq '__peco_z'
   bind \ch peco_select_history
 end
