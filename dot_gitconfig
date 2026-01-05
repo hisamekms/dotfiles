@@ -10,3 +10,5 @@
 	st = status
 	cm = commit
 	aa = add -A
+[credential "https://github.com"]
+	helper = !gh auth git-credential
