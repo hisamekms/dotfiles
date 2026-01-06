@@ -55,12 +55,27 @@ function ghq_peco
     end
 end
 
+function __fzf_wtp_cd
+    set -l selected
+    if command -v wtp >/dev/null 2>&1; and command -v fzf >/dev/null 2>&1
+        set selected (wtp list 2>/dev/null | awk 'NR>2 && NF>0 {print $1}' | fzf --height 40% --border)
+        if test -n "$selected"
+            if test "$selected" = "@"
+                cd "/workspace"
+            else
+                cd "/workspace/worktrees/$selected"
+            end
+        end
+    end
+end
+
 function fish_user_key_bindings
   # unbind fish-ghq key bindings
   bind -e \cg
   bind \cr 'ghq_peco'
   bind \cq '__peco_z'
   bind \ch peco_select_history
+  bind \cw '__fzf_wtp_cd'
 end
 
 mise activate fish | source
@@ -79,4 +94,7 @@ abbr -a gplr 'git pull --rebase'
 
 # Others
 abbr -a m 'mise'
+abbr -a mr 'mise run'
 abbr -a che 'chezmoi'
+
+wtp shell-init fish | source
