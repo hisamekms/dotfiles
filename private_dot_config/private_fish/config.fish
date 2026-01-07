@@ -83,4 +83,5 @@ abbr -a gplr 'git pull --rebase'
 
 # Others
 abbr -a m 'mise'
+abbr -a mr 'mise run'
 abbr -a che 'chezmoi'
