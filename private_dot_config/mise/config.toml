@@ -1,6 +1,8 @@
 [tools]
+bat = "latest"
 bun = "latest"
 chezmoi = "latest"
+eza = "latest"
 fzf = "latest"
 gh = "latest"
 ghq = "latest"
@@ -11,10 +13,12 @@ neovim = "latest"
 "npm:@devcontainers/cli" = "latest"
 "npm:@openai/codex" = "latest"
 peco = "latest"
+rg = "latest"
 starship = "latest"
 tmux = "latest"
 usage = "latest"
 zellij = "latest"
+zoxide = "latest"
 
 [env]
 MISE_NPM_PACKAGE_MANAGER = "bun"
