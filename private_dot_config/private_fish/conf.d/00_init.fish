@@ -1,11 +1,6 @@
-if not status is-interactive; or not test -t 1
-  exit
-end
-
 set PATH ~/.anyenv/bin $PATH
 
 mise activate fish | source
-starship init fish | source
 
 if command -v anyenv >/dev/null
   eval (anyenv init - fish | source)
