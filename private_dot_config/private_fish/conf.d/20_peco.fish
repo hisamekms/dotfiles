@@ -40,10 +40,3 @@ function ghq_peco
         cd "$repo"
     end
 end
-
-function fish_user_key_bindings
-  # unbind fish-ghq key bindings
-  bind \cr 'ghq_peco'
-  bind \cq '__peco_z'
-  bind \ch peco_select_history
-end
