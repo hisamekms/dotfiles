@@ -1,4 +1,5 @@
-set PATH ~/.anyenv/bin $PATH
+fish_add_path ~/.anyenv/bin
+fish_add_path ~/.local/bin
 
 if command -v anyenv >/dev/null
   eval (anyenv init - fish | source)
