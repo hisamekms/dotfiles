@@ -2,8 +2,8 @@ fish_add_path ~/.local/bin
 fish_add_path ~/.anyenv/bin
 
 if command -v anyenv >/dev/null
-end
   eval (anyenv init - fish | source)
+end
 
 if command -v direnv >/dev/null
   eval (direnv hook fish)
