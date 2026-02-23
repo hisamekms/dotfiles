@@ -216,7 +216,7 @@ function __wt_cd
             set current_branch (string replace 'refs/heads/' '' -- $ref)
         else if test -z "$line"
             if test -n "$current_path"
-                set -a candidates "$current_branch\t$current_path"
+                set -a candidates "$current_branch"\t"$current_path"
             end
             set current_path ""
             set current_branch ""
@@ -225,7 +225,7 @@ function __wt_cd
 
     # Handle last entry
     if test -n "$current_path"
-        set -a candidates "$current_branch\t$current_path"
+        set -a candidates "$current_branch"\t"$current_path"
     end
 
     if test (count $candidates) -eq 0
@@ -233,7 +233,7 @@ function __wt_cd
         return 1
     end
 
-    set -l selected (printf '%s\n' $candidates | fzf --with-nth=1 --delimiter='\t')
+    set -l selected (printf '%s\n' $candidates | fzf --with-nth=1 --delimiter=\t)
     if test -n "$selected"
         set -l target (string split \t -- $selected)[2]
         cd "$target"
