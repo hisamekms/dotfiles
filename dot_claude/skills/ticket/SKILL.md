@@ -79,7 +79,7 @@ Produce a **title** and **body** in the following structure:
 ## Usage example
 <!-- Show how the end result looks from the user's perspective. Code blocks, CLI commands, UI mockups, etc. -->
 
-## Acceptance criteria
+## Definition of Done
 - [ ] Criterion 1
 - [ ] Criterion 2
 ...
