@@ -39,7 +39,7 @@ For each issue found, specify the file and line context.
 If the code looks good, say so briefly.
 Keep the review concise and actionable."
 
-review_result="$(echo "$diff" | codex -q "$review_prompt" 2>/dev/null)" \
+review_result="$(echo "$diff" | codex --dangerously-bypass-approvals-and-sandbox exec "$review_prompt" 2>/dev/null)" \
   || fail "Codex review failed for PR #${pr_number}."
 
 [[ -n "$review_result" ]] || fail "Codex returned an empty review for PR #${pr_number}."
