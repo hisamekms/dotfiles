@@ -1,2 +1,4 @@
-font-family-bold = HackGen35 Console NF
-font-family-italic = HackGen35 Console NF
+font-family = "UDEV Gothic 35NF"
+font-family-bold = "UDEV Gothic 35NF"
+font-family-italic = "UDEV Gothic 35NF"
+font-family-bold-italic = "UDEV Gothic 35NF"
