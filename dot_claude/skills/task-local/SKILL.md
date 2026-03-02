@@ -2,7 +2,7 @@
 name: task-local
 description: ローカルタスクファイルによるタスク管理。タスクの実行・追加・一覧表示を行う。Triggers on "/task-local", "タスク実行", "次のタスク" or similar.
 argument-hint: [<id> | add <description>]
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, AskUserQuestion, EnterPlanMode
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, EnterPlanMode
 ---
 
 # Task Local - ローカルタスク管理スキル
