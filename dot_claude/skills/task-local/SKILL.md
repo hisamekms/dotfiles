@@ -1,7 +1,7 @@
 ---
 name: task-local
 description: ローカルタスクファイルによるタスク管理。タスクの実行・追加・一覧表示を行う。Triggers on "/task-local", "タスク実行", "次のタスク" or similar.
-argument-hint: [<id> | ls | add <description>]
+argument-hint: [<id> | add <description>]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, AskUserQuestion, EnterPlanMode
 ---
 
@@ -13,55 +13,38 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, AskUserQuestion, Enter
 
 ファイル名: `<id>-<title>.md` (例: `001-setup-auth.md`)
 
-```md
----
-id: "001"
-title: タスクのタイトル
-status: draft|todo|in_progress|done
-session_id:
-branch:
-depends_on: []
-completed_date:
----
+テンプレート: `templates/task.template.md`
 
-タスクの本文（実行内容の詳細）
-```
+`started_at` / `completed_at` は ISO 8601 datetime 文字列（例: `2026-03-02T13:03:33Z`）。
 
 ## コマンド
 
 - `/task-local` — 次に実行可能なタスクを自動選択して実行
 - `/task-local <id>` — 指定IDのタスクを実行
-- `/task-local add <description>` — 新しいタスクを追加（計画モードで詳細を詰める）
+- `/task-local add <description>` — 新しいタスクを追加（対話で詳細を詰める）
 - `/task-local add --simple <description>` — 新しいタスクを簡易追加（計画モードを使わない）
-- `/task-local ls` — 全タスクの一覧を表示
 
 ## 引数の解析
 
 `$ARGUMENTS` を以下のルールで解析する:
 
 1. **空の場合**: 次に実行可能なタスクを自動選択して実行（後述の「タスク自動選択」参照）
-2. **`ls` の場合**: 全タスクの一覧を表示（後述の「タスク一覧」参照）
-3. **`add` で始まる場合**: `add` 以降のテキストを説明として新しいタスクを追加（後述の「タスク追加」参照）
+2. **`add` で始まる場合**: `add` 以降のテキストを説明として新しいタスクを追加（後述の「タスク追加」参照）
    - `--simple` フラグが含まれる場合は **簡易モード** で追加する（`--simple` を除いた残りを説明とする）
-4. **数字の場合**: 該当IDのタスクを実行（後述の「タスク実行」参照）
-
----
-
-## タスク一覧
-
-このスキルの `scripts/list-tasks.sh` を `Bash` で実行し、出力されたMarkdownテーブルをそのままユーザーに表示する。
-
-タスクが1件も存在しない場合は「タスクがありません」と表示する。
+3. **数字の場合**: 該当IDのタスクを実行（後述の「タスク実行」参照）
 
 ---
 
 ## タスク自動選択
 
-このスキルの `scripts/next-task.sh` を `Bash` で実行し、着手可能なタスクIDを取得する。
-実行時に環境変数 `CLAUDE_SESSION_ID` を渡すこと。スクリプトはタスクの `status` を `in_progress` に、`session_id` と `branch` を設定する。
+以下を `Bash` で実行して、着手可能なタスクIDを取得する。
 
-- 正常終了（exit 0）: 出力されたIDのタスクを「タスク実行」フローで実行する（Step 1 はスキップ）
-- 異常終了（exit 1）: 着手可能なタスクがない旨をユーザーに伝えて終了する
+```bash
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/next-task.sh
+```
+
+- exit 0: 出力されたIDのタスクを実行する
+- exit 1: 着手可能なタスクなしとして終了する
 
 ---
 
@@ -69,25 +52,26 @@ completed_date:
 
 ### 通常モードと簡易モード
 
-- **通常モード**（`add <description>`）: Phase 1 → Phase 2 → Phase 3 の全手順を実行する
-- **簡易モード**（`add --simple <description>`）: Phase 1 → Phase 3（簡易） のみ実行する。Phase 2（計画モード）をスキップする
+- **通常モード**（`add <description>`）: Phase 1 → Phase 2 → Phase 3 → Phase 4 の全手順を実行する
+- **簡易モード**（`add --simple <description>`）: Phase 1 → Phase 3 → Phase 4（簡易）を実行する。Phase 2（計画）をスキップする
 
 ### 手順
 
 #### Phase 1: ドラフト作成（ID確保）
 
-1. `tasks.local/` ディレクトリが存在しない場合は作成する
-2. 既存タスクファイルを走査し、最大IDを取得する。タスクが存在しない場合は `000` を最大IDとする
-3. 新しいID = 最大ID + 1（ゼロ埋め3桁）
-4. ユーザーの説明から適切な `title` を決定する（英語のkebab-case、簡潔に）
-5. **`status: draft`** でタスクファイルを作成する（本文は空、他のメタデータも空）
-   - この時点でIDとファイルが確保され、他のタスク追加との重複を防ぐ
+以下を `Bash` で実行する。
+
+```bash
+./scripts/create-draft-task.sh "<description>"
+```
+
+`id` / `title` / `path` の出力を後続フェーズで使う。
 
 #### Phase 2: 計画（不明点の解消ループ）
 
 > **簡易モードの場合はこの Phase をスキップし、Phase 3 へ進む。**
 
-`EnterPlanMode` でタスクの計画を立てる。以下のループを不明点がなくなるまで繰り返す:
+プランモードには入らず、通常の対話でタスクの計画を立てる。以下のループを不明点がなくなるまで繰り返す:
 
 1. タスクの説明とコードベースの調査結果を基に、**不明瞭な点・意思決定が必要な点**をリストアップする
 2. リストが空であれば Phase 3 へ進む
@@ -99,7 +83,20 @@ completed_date:
 
 このループは **リストアップで不明点が1つも出なくなるまで** 繰り返す。
 
-#### Phase 3: タスクファイルの確定
+#### Phase 3: 依存タスクの探索
+
+以下を `Bash` で実行して、`todo` / `in_progress` のタスク一覧を取得する。
+
+```bash
+./scripts/list-active-tasks.sh
+./scripts/list-active-tasks.sh --tag auth --tag backend
+```
+
+- `--tag` は複数指定可能
+- 複数指定時は OR 条件で検索する
+- 一覧と本文抜粋を確認し、依存タスク候補を洗い出す
+
+#### Phase 4: タスクファイルの確定
 
 **通常モードの場合:**
 
@@ -107,16 +104,22 @@ completed_date:
 2. `AskUserQuestion` で以下を確認する:
    - タイトルと本文の内容が適切か
    - 依存タスク (`depends_on`) があるか
-3. タスクファイルを更新する:
-   - 本文を記載
-   - `depends_on` を設定（該当がある場合）
-   - `status` を `draft` から **`todo`** に変更する
+   - 検索に使うタグ (`tags`) を設定するか
+3. タスクファイル本文を記載する
+4. 以下を `Bash` で実行して、`depends_on` と `status: todo`（必要なら `tags`）を更新する:
+
+```bash
+./scripts/finalize-task-metadata.sh "<path>" --depends 001 --depends 004 --tag auth --tag backend
+```
 
 **簡易モードの場合:**
 
 1. ユーザーの説明をそのままタスクファイルの本文に記載する
-2. タスクファイルを更新する:
-   - `status` を `draft` から **`todo`** に変更する
+2. 以下を `Bash` で実行して、`depends_on` と `status: todo`（必要なら `tags`）を更新する:
+
+```bash
+./scripts/finalize-task-metadata.sh "<path>" --depends 001 --tag auth
+```
 
 ファイル名: `<id>-<title>.md`
 
@@ -139,11 +142,11 @@ completed_date:
 
 > タスク自動選択（`next-task.sh`）経由の場合、このステップはスキップする（スクリプトが設定済み）。
 
-タスクファイルのfrontmatterを更新する:
+以下を `Bash` で実行する。
 
-- `status` を `in_progress` に変更
-- `session_id` に `${CLAUDE_SESSION_ID}` を設定
-- `branch` にブランチ名を設定（形式: `task/<id>-<title>`）
+```bash
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/start-task.sh "<task-file-path>"
+```
 
 #### Step 2: Worktreeを作成
 
@@ -159,7 +162,9 @@ completed_date:
 
 ```
 # 完了後処理
-- タスクファイル更新（status, compelted_date）
+- 実装が完了したら、`AskUserQuestion` でユーザーにタスク完了の承認を求める
+- `TASK_LOCAL_MERGE_MODE` に基づいてマージ方法を決定する（`merge` または `pr`）
+- タスクファイル更新（status, completed_at）
     - path: `<タスクファイルの絶対パス>` 
 - worktreeの削除
 ```
@@ -167,46 +172,6 @@ completed_date:
 #### Step 4: タスクの実装
 
 承認されたプランに基づいてタスクを実装する。通常のコーディングフローに従う。
-
-#### Step 5: 完了確認
-
-実装が完了したら、`AskUserQuestion` でユーザーにタスク完了の承認を求める:
-
-- 変更内容のサマリーを提示する
-- 「タスクを完了としてマークしてよいか？」と確認する
-
-ユーザーが承認しない場合は、フィードバックに基づいて修正を行い、再度確認する。
-
-#### Step 6: Worktreeの後処理
-
-環境変数 `TASK_LOCAL_MERGE_MODE` に基づいてワークフローを切り替える。
-
-- `pr` — PRを作成する
-- `merge`（デフォルト） — mainに直接マージする
-
-##### `TASK_LOCAL_MERGE_MODE=merge`（デフォルト）
-
-1. 変更をコミットし、mainブランチにマージする
-2. worktreeを削除する
-3. mainブランチを最新にする
-
-##### `TASK_LOCAL_MERGE_MODE=pr`
-
-1. 変更をコミットし、リモートにプッシュする
-2. `gh pr create` でPRを作成する（タイトルはタスクのtitle、本文は変更サマリー）
-3. worktreeを削除する
-4. PRのURLをユーザーに表示する
-
-#### Step 7: タスクの完了
-
-> **重要**: このステップは必ず実行すること。マージやworktree削除が完了しても、タスクファイルの更新を忘れないこと。
-
-タスクファイルのfrontmatterを更新する:
-
-- `status` を `done` に変更
-- `completed_date` に今日の日付を設定（`yyyy-mm-dd` 形式）
-
-完了した旨をユーザーに報告する。
 
 ---
 

@@ -39,12 +39,14 @@ fi
 # Claim the task immediately
 candidate_title="$(parse_field "$candidate_file" "title")"
 branch="task/${candidate_id}-${candidate_title}"
+started_at="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
 update_field "$candidate_file" "status" "in_progress"
 update_field "$candidate_file" "branch" "$branch"
 if [ -n "${CLAUDE_SESSION_ID:-}" ]; then
   update_field "$candidate_file" "session_id" "$CLAUDE_SESSION_ID"
 fi
+update_field "$candidate_file" "started_at" "$started_at"
 
-log "タスク ${candidate_id} を in_progress に変更しました (branch: ${branch})"
+log "タスク ${candidate_id} を in_progress に変更しました (branch: ${branch}, started_at: ${started_at})"
 echo "$candidate_id"
