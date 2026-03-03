@@ -1,4 +1,5 @@
 [tools]
+aws-cli = { version = "latest", symlink_bins = "true" }
 bat = "latest"
 bun = "latest"
 "cargo:tmux-shortcut-helper" = "latest"
@@ -7,6 +8,7 @@ eza = "latest"
 fzf = "latest"
 gh = "latest"
 ghq = "latest"
+"github:hisamekms/dcw" = "0.2.0"
 go = "latest"
 "go:github.com/satococoa/wtp/v2/cmd/wtp" = "latest"
 "go:tailscale.com/cmd/tailscale" = "latest"
