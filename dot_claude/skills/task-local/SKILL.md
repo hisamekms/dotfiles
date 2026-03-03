@@ -33,16 +33,23 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, EnterPlanMode
    - `--simple` フラグが含まれる場合は **簡易モード** で追加する（`--simple` を除いた残りを説明とする）
 3. **数字の場合**: 該当IDのタスクを実行（後述の「タスク実行」参照）
 
+## Bash実行ルール
+
+- `Bash` でscriptを呼ぶときは、毎回 `CLAUDE_SESSION_ID` を明示して実行する。
+
 ---
 
 ## タスク自動選択
 
 以下を `Bash` で実行して、着手可能なタスクIDを取得する。
 
+コマンド
 ```bash
-CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/next-task.sh
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
+<skills_root>/task-local/scripts/next-task.sh
 ```
 
+exit codeに応じた処理
 - exit 0: 出力されたIDのタスクを実行する
 - exit 1: 着手可能なタスクなしとして終了する
 
@@ -62,7 +69,8 @@ CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/next-task.sh
 以下を `Bash` で実行する。
 
 ```bash
-./scripts/create-draft-task.sh "<description>"
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
+<skills_root>/task-local/scripts/create-draft-task.sh "<description>"
 ```
 
 `id` / `title` / `path` の出力を後続フェーズで使う。
@@ -88,8 +96,10 @@ CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/next-task.sh
 以下を `Bash` で実行して、`todo` / `in_progress` のタスク一覧を取得する。
 
 ```bash
-./scripts/list-active-tasks.sh
-./scripts/list-active-tasks.sh --tag auth --tag backend
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
+<skills_root>/task-local/scripts/list-active-tasks.sh
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
+<skills_root>/task-local/scripts/list-active-tasks.sh --tag auth --tag backend
 ```
 
 - `--tag` は複数指定可能
@@ -109,7 +119,8 @@ CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/next-task.sh
 4. 以下を `Bash` で実行して、`depends_on` と `status: todo`（必要なら `tags`）を更新する:
 
 ```bash
-./scripts/finalize-task-metadata.sh "<path>" --depends 001 --depends 004 --tag auth --tag backend
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
+<skills_root>/task-local/scripts/finalize-task-metadata.sh "<path>" --depends 001 --depends 004 --tag auth --tag backend
 ```
 
 **簡易モードの場合:**
@@ -118,7 +129,8 @@ CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/next-task.sh
 2. 以下を `Bash` で実行して、`depends_on` と `status: todo`（必要なら `tags`）を更新する:
 
 ```bash
-./scripts/finalize-task-metadata.sh "<path>" --depends 001 --tag auth
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
+<skills_root>/task-local/scripts/finalize-task-metadata.sh "<path>" --depends 001 --tag auth
 ```
 
 ファイル名: `<id>-<title>.md`
@@ -144,8 +156,10 @@ CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/next-task.sh
 
 以下を `Bash` で実行する。
 
+コマンド
 ```bash
-CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID:-}" ./scripts/start-task.sh "<task-file-path>"
+CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
+<skills_root>/task-local/scripts/start-task.sh "<task-file-path>"
 ```
 
 #### Step 2: Worktreeを作成
