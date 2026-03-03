@@ -16,6 +16,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, EnterPlanMode
 テンプレート: `templates/task.template.md`
 
 `started_at` / `completed_at` は ISO 8601 datetime 文字列（例: `2026-03-02T13:03:33Z`）。
+`priority` は `p0`〜`p3` を取り、未指定時のデフォルトは `p2`。
 
 ## コマンド
 
@@ -116,21 +117,21 @@ CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
    - 依存タスク (`depends_on`) があるか
    - 検索に使うタグ (`tags`) を設定するか
 3. タスクファイル本文を記載する
-4. 以下を `Bash` で実行して、`depends_on` と `status: todo`（必要なら `tags`）を更新する:
+4. 以下を `Bash` で実行して、`depends_on` と `status: todo`（必要なら `tags` / `priority`）を更新する:
 
 ```bash
 CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
-<skills_root>/task-local/scripts/finalize-task-metadata.sh "<path>" --depends 001 --depends 004 --tag auth --tag backend
+<skills_root>/task-local/scripts/finalize-task-metadata.sh "<path>" --depends 001 --depends 004 --tag auth --tag backend --priority p1
 ```
 
 **簡易モードの場合:**
 
 1. ユーザーの説明をそのままタスクファイルの本文に記載する
-2. 以下を `Bash` で実行して、`depends_on` と `status: todo`（必要なら `tags`）を更新する:
+2. 以下を `Bash` で実行して、`depends_on` と `status: todo`（必要なら `tags` / `priority`）を更新する:
 
 ```bash
 CLAUDE_SESSION_ID="${CLAUDE_SESSION_ID}" \
-<skills_root>/task-local/scripts/finalize-task-metadata.sh "<path>" --depends 001 --tag auth
+<skills_root>/task-local/scripts/finalize-task-metadata.sh "<path>" --depends 001 --tag auth --priority p2
 ```
 
 ファイル名: `<id>-<title>.md`

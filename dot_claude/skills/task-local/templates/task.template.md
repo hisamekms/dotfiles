@@ -2,6 +2,7 @@
 id: "001"
 title: タスクのタイトル
 status: draft|todo|in_progress|done
+priority: p2
 session_id:
 branch:
 depends_on: []
