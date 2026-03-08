@@ -14,28 +14,24 @@ function __ghq_repository_search -d 'Repository search'
 
     set -l root (ghq root)
 
-    # Build entries: short_label \t full_path
     # github.com/user/repo -> user/repo, others keep site/user/repo
-    set -l entries
-    for full in (ghq list --full-path)
-        set -l rel (string replace -- "$root/" '' "$full")
-        set -l short (string replace -- 'github.com/' '' "$rel")
-        set -a entries "$short\t$full"
-    end
-
-    set -l select
+    set -l selected
     switch "$selector"
         case fzf fzf-tmux
-            printf '%s\n' $entries | "$selector" $selector_options $flags --delimiter='\t' --with-nth=1 | read select
+            ghq list | string replace 'github.com/' '' | "$selector" $selector_options $flags | read selected
         case fzy sk
-            set -l picked (printf '%s\n' $entries | string split -f1 \t | "$selector" $selector_options $flags)
-            [ -n "$picked" ]; and set select (printf '%s\n' $entries | string match -- "$picked\t*")
+            ghq list | string replace 'github.com/' '' | "$selector" $selector_options $flags | read selected
         case \*
             printf "\nERROR: plugin-ghq is not support '$selector'.\n"
     end
-    if [ -n "$select" ]
-        set -l full_path (string split \t -- "$select")[2]
-        cd "$full_path"
+    if [ -n "$selected" ]
+        set -l target "$root/$selected"
+        if not test -d "$target"
+            set target "$root/github.com/$selected"
+        end
+        if test -d "$target"
+            cd "$target"
+        end
     end
     commandline -f repaint
 end
