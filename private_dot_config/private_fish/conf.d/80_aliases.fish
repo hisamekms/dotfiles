@@ -20,6 +20,9 @@ abbr -a ls 'eza -lah --git'
 # Bat
 abbr -a cat 'bat'
 
+# Docker
+abbr -a docker 'podman'
+
 # Others
 abbr -a m 'mise'
 abbr -a mr 'mise run'
