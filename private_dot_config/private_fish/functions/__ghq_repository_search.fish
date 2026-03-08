@@ -27,8 +27,7 @@ function __ghq_repository_search -d 'Repository search'
     switch "$selector"
         case fzf fzf-tmux
             printf '%s\n' $entries | "$selector" $selector_options $flags --delimiter='\t' --with-nth=1 | read select
-        case peco percol fzy sk
-            # selectors without --with-nth: show short label, look up full path after
+        case fzy sk
             set -l picked (printf '%s\n' $entries | string split -f1 \t | "$selector" $selector_options $flags)
             [ -n "$picked" ]; and set select (printf '%s\n' $entries | string match -- "$picked\t*")
         case \*
