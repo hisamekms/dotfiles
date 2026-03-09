@@ -1,5 +1,13 @@
 {
   "permissions": {
+    "allow": [
+      "WebFetch",
+      "WebSearch",
+      "Bash(git *)",
+      "Read",
+      "Glob",
+      "Grep"
+    ],
     "deny": [
       "Bash(git push --force*)",
       "Bash(git push -f*)",
@@ -9,14 +17,6 @@
       "Bash(git restore .*)",
       "Bash(git branch -D*)",
       "Bash(git stash drop*)"
-    ],
-    "allow": [
-      "WebFetch",
-      "WebSearch",
-      "Bash(git *)",
-      "Read",
-      "Glob",
-      "Grep"
     ]
   },
   "hooks": {
@@ -55,6 +55,15 @@
     ]
   },
   "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    }
   }
 }
