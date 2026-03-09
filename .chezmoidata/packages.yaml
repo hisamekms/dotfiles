@@ -1,0 +1,4 @@
+claude_plugins:
+  - marketplace: "anthropics/skills"
+    plugins:
+      - "skill-creator@anthropic-agent-skills"

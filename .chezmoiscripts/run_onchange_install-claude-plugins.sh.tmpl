@@ -1,0 +1,17 @@
+#!/bin/bash
+# hash: {{ include ".chezmoidata/packages.yaml" | sha256sum }}
+set -euo pipefail
+
+echo "Installing Claude Code plugins..."
+
+{{ range .claude_plugins }}
+echo "Adding marketplace: {{ .marketplace }}"
+claude plugin marketplace add {{ .marketplace | quote }} 2>/dev/null || true
+
+{{ range .plugins }}
+echo "Installing plugin: {{ . }}"
+claude plugin install {{ . | quote }} 2>/dev/null || true
+{{ end }}
+{{ end }}
+
+echo "Claude Code plugins installation complete."
