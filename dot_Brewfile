@@ -1,0 +1,13 @@
+tap "nikitabobko/tap"
+brew "chezmoi"
+brew "fish"
+brew "mise"
+brew "podman"
+cask "nikitabobko/tap/aerospace"
+cask "font-udev-gothic-nf"
+cask "ghostty"
+cask "raycast", args: { appdir: "/Applications" }
+cask "slack", args: { appdir: "/Applications" }
+cask "zed"
+go "cmd/go"
+go "cmd/gofmt"
