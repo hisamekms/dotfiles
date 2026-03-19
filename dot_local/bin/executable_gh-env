@@ -1,0 +1,11 @@
+#!/bin/bash
+# Sets GH_TOKEN from gh auth based on GH_USER env var.
+# Source this script via mise _.source in each repo's .mise.local.toml:
+#
+#   [env]
+#   GH_USER = "your-github-username"
+#   _.source = "/path/to/.local/bin/gh-env"
+GH_BIN=$(find "$HOME/.local/share/mise/installs/gh" -name gh -type f 2>/dev/null | head -1)
+if [ -n "$GH_BIN" ] && [ -n "$GH_USER" ]; then
+  export GH_TOKEN=$("$GH_BIN" auth token --user "$GH_USER")
+fi
