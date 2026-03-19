@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${SLACK_NOTIFICATION_WEBHOOK_URL:?SLACK_NOTIFICATION_WEBHOOK_URL is not set}"
-: "${SLACK_NOTIFICATION_PROJECT:?SLACK_NOTIFICATION_PROJECT is not set}"
+[ -z "${SLACK_NOTIFICATION_WEBHOOK_URL:-}" ] || [ -z "${SLACK_NOTIFICATION_PROJECT:-}" ] && exit 0
 
 json=$(cat)
 
