@@ -1,0 +1,10 @@
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "check-secrets"
+name = "Check for sensitive information with Claude"
+language = "script"
+entry = "./scripts/check-secrets.sh"
+stages = ["pre-push"]
+always_run = true
