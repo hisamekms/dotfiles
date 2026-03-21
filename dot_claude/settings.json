@@ -26,10 +26,6 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/slack-notify-notification.sh"
-          },
-          {
-            "type": "command",
-            "command": "[ -f /run/.containerenv ] && JSON=$(cat) && TITLE=$(echo \"$JSON\" | jq -r '.title // .notification_type // \"Notification\"') && MSG=$(echo \"$JSON\" | jq -r '.message // \"\"' | head -c 200) && printf '\\e]777;notify;Claude [%s];%s\\a' \"$TITLE\" \"$MSG\" > /dev/tty"
           }
         ]
       }
@@ -40,10 +36,6 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/slack-notify-stop.sh"
-          },
-          {
-            "type": "command",
-            "command": "[ -f /run/.containerenv ] && MSG=$(cat | jq -r '.last_assistant_message // .stop_hook_reason // \"Done\"' | head -c 200) && printf '\\e]777;notify;Claude;%s\\a' \"$MSG\" > /dev/tty"
           }
         ]
       }
@@ -73,5 +65,6 @@
         "repo": "anthropics/skills"
       }
     }
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }
