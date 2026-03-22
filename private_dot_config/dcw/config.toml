@@ -1,0 +1,9 @@
+[docker]
+path = "podman"
+compose_path = "podman-compose"
+
+[relay.browser]
+enabled = true
+
+[relay.cmux]
+enabled = true
