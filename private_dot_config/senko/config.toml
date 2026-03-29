@@ -1,17 +1,22 @@
 [hooks.on_task_ready.launch-claude-workspace]
 command = "~/.config/senko/hooks/launch-claude-workspace.sh"
+requires_env = ["SENKO_HOST_PROJECT_DIR", "SENKO_PROJECT_NAME"]
 
 [hooks.on_task_completed.relay-claude-workspace]
 command = "~/.config/senko/hooks/relay-claude-workspace.sh"
+requires_env = ["SENKO_HOST_PROJECT_DIR", "SENKO_PROJECT_NAME"]
 
 [hooks.on_task_started.set-cmux-status]
 command = "~/.config/senko/hooks/set-cmux-status.sh"
+requires_env = ["SENKO_PROJECT_NAME", "CMUX_WORKSPACE_ID"]
 
 [hooks.on_task_completed.clear-cmux-status]
 command = "~/.config/senko/hooks/clear-cmux-status.sh"
+requires_env = ["SENKO_PROJECT_NAME", "CMUX_WORKSPACE_ID"]
 
 [hooks.on_task_canceled.clear-cmux-status]
 command = "~/.config/senko/hooks/clear-cmux-status.sh"
+requires_env = ["SENKO_PROJECT_NAME", "CMUX_WORKSPACE_ID"]
 
 [hooks.on_no_eligible_task.close-idle-workspace]
 command = "~/.config/senko/hooks/close-idle-workspace.sh"

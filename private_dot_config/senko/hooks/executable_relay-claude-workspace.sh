@@ -8,8 +8,13 @@ if [[ -z "${SENKO_HOST_PROJECT_DIR:-}" ]]; then
   exit 1
 fi
 
+if [[ -z "${SENKO_PROJECT_NAME:-}" ]]; then
+  echo "ERROR: SENKO_PROJECT_NAME is not set" >&2
+  exit 1
+fi
+
 # cmux で新しいworkspaceを作成
-ws_name="senko-$(date +%Y%m%d%H%M%S)"
+ws_name="${SENKO_PROJECT_NAME}-$(date +%Y%m%d%H%M%S)"
 result=$(cmux new-workspace --cwd "$SENKO_HOST_PROJECT_DIR" --command "dcw exec fish")
 ws_ref=$(echo "$result" | awk '{print $2}')
 cmux rename-workspace --workspace "$ws_ref" "$ws_name"
