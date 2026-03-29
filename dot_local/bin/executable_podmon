@@ -157,33 +157,33 @@ check_cpu() {
   fi
 }
 
-# --- Disk check ---
+# --- Disk check (based on podman machine disk usage) ---
 check_disk() {
-  local df_output
-  df_output="$(podman system df --format '{{.Type}}\t{{.Size}}\t{{.Reclaimable}}' 2>/dev/null)" || return
+  local allocated used
+  allocated="$(podman system info --format '{{.Store.GraphRootAllocated}}' 2>/dev/null)" || return
+  used="$(podman system info --format '{{.Store.GraphRootUsed}}' 2>/dev/null)" || return
 
-  if [[ -z "$df_output" ]]; then
+  if [[ -z "$allocated" ]] || [[ "$allocated" -eq 0 ]]; then
+    log "disk: could not determine machine disk allocation"
     return
   fi
 
-  # Check reclaimable space as an indicator of bloat
-  local total_images=0 reclaimable_images=0
-  while IFS=$'\t' read -r type size reclaimable; do
-    if [[ "$type" == "Images" ]]; then
-      log "disk: Images size=${size}, reclaimable=${reclaimable}"
-      # Parse reclaimable percentage
-      local reclaim_pct
-      reclaim_pct="$(echo "$reclaimable" | grep -oE '[0-9]+%' | tr -d '%')"
-      if [[ -n "$reclaim_pct" ]] && (( reclaim_pct >= DISK_THRESHOLD )); then
-        if should_alert "disk"; then
-          notify "Podman Disk Alert" "Images: ${size}, ${reclaimable} reclaimable. Run: podman system prune"
-        fi
-        return
-      fi
-    fi
-  done <<< "$df_output"
+  local usage_pct
+  usage_pct="$(echo "scale=1; $used * 100 / $allocated" | bc)"
+  local usage_pct_int
+  usage_pct_int="$(echo "$usage_pct" | awk -F. '{print $1}')"
 
-  log "disk OK"
+  local used_gb allocated_gb
+  used_gb="$(echo "scale=1; $used / 1073741824" | bc)"
+  allocated_gb="$(echo "scale=1; $allocated / 1073741824" | bc)"
+
+  if (( usage_pct_int >= DISK_THRESHOLD )); then
+    if should_alert "disk"; then
+      notify "Podman Disk Alert" "Machine disk: ${usage_pct}% (${used_gb}GB / ${allocated_gb}GB)"
+    fi
+  else
+    log "disk OK: ${usage_pct}% (${used_gb}GB / ${allocated_gb}GB)"
+  fi
 }
 
 # --- Container restart/exit check ---
