@@ -1,0 +1,215 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/podmon/config"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/podmon"
+LOG_FILE="${STATE_DIR}/podmon.log"
+
+mkdir -p "$STATE_DIR"
+
+# Defaults
+MEM_THRESHOLD=70
+DISK_THRESHOLD=80
+CPU_THRESHOLD_PCT=80
+ALERT_COOLDOWN=300
+
+# Load config
+if [[ -f "$CONFIG_FILE" ]]; then
+  # shellcheck source=/dev/null
+  source "$CONFIG_FILE"
+fi
+
+log() {
+  local ts
+  ts="$(date '+%Y-%m-%d %H:%M:%S')"
+  printf '[%s] %s\n' "$ts" "$*" >> "$LOG_FILE"
+}
+
+notify() {
+  local title="$1"
+  local message="$2"
+  osascript -e "display notification \"$message\" with title \"$title\" sound name \"Funk\""
+  log "ALERT: $title - $message"
+}
+
+should_alert() {
+  local key="$1"
+  local cooldown_file="${STATE_DIR}/cooldown_${key}"
+
+  if [[ -f "$cooldown_file" ]]; then
+    local last_alert
+    last_alert="$(cat "$cooldown_file")"
+    local now
+    now="$(date +%s)"
+    if (( now - last_alert < ALERT_COOLDOWN )); then
+      return 1
+    fi
+  fi
+
+  date +%s > "$cooldown_file"
+  return 0
+}
+
+# Check if podman is available
+if ! command -v podman &>/dev/null; then
+  log "podman not found in PATH"
+  exit 0
+fi
+
+# Check if podman machine is running
+if ! podman info &>/dev/null; then
+  log "podman machine is not running"
+  exit 0
+fi
+
+# --- Memory check (all containers combined) ---
+check_memory() {
+  local stats
+  stats="$(podman stats --no-stream --format '{{.MemPerc}}' 2>/dev/null)" || return
+
+  if [[ -z "$stats" ]]; then
+    return
+  fi
+
+  local total=0
+  local count=0
+  while IFS= read -r pct; do
+    pct="${pct%%%}"
+    total="$(echo "$total + $pct" | bc)"
+    count=$((count + 1))
+  done <<< "$stats"
+
+  # Get machine memory allocation
+  local machine_mem
+  machine_mem="$(podman info --format '{{.Host.MemTotal}}' 2>/dev/null)" || return
+  local machine_mem_gb
+  machine_mem_gb="$(echo "scale=1; $machine_mem / 1073741824" | bc)"
+
+  # Calculate total memory usage percentage relative to machine
+  local mem_used_bytes=0
+  local usage_lines
+  usage_lines="$(podman stats --no-stream --format '{{.MemUsage}}' 2>/dev/null)" || return
+  while IFS= read -r line; do
+    local used
+    used="$(echo "$line" | awk -F'/' '{print $1}' | xargs)"
+    local val unit
+    val="$(echo "$used" | grep -oE '[0-9.]+')"
+    unit="$(echo "$used" | grep -oE '[A-Za-z]+')"
+    case "$unit" in
+      GB|GiB) mem_used_bytes="$(echo "$mem_used_bytes + $val * 1073741824" | bc)" ;;
+      MB|MiB) mem_used_bytes="$(echo "$mem_used_bytes + $val * 1048576" | bc)" ;;
+      kB|KiB) mem_used_bytes="$(echo "$mem_used_bytes + $val * 1024" | bc)" ;;
+    esac
+  done <<< "$usage_lines"
+
+  local mem_pct
+  mem_pct="$(echo "scale=1; $mem_used_bytes * 100 / $machine_mem" | bc)"
+  local mem_pct_int
+  mem_pct_int="$(echo "$mem_pct" | awk -F. '{print $1}')"
+
+  if (( mem_pct_int >= MEM_THRESHOLD )); then
+    local mem_used_gb
+    mem_used_gb="$(echo "scale=1; $mem_used_bytes / 1073741824" | bc)"
+    if should_alert "memory"; then
+      notify "Podman Memory Alert" "Usage: ${mem_pct}% (${mem_used_gb}GB / ${machine_mem_gb}GB) across ${count} containers"
+    fi
+  else
+    log "memory OK: ${mem_pct}% (${count} containers)"
+  fi
+}
+
+# --- CPU check (all containers combined, threshold based on allocated cores) ---
+check_cpu() {
+  local ncpus
+  ncpus="$(podman info --format '{{.Host.CPUs}}' 2>/dev/null)" || return
+  if [[ -z "$ncpus" ]] || (( ncpus == 0 )); then
+    log "cpu: could not determine allocated cores"
+    return
+  fi
+
+  local cpu_threshold
+  cpu_threshold="$(echo "$ncpus * $CPU_THRESHOLD_PCT" | bc)"
+
+  local stats
+  stats="$(podman stats --no-stream --format '{{.CPUPerc}}' 2>/dev/null)" || return
+
+  if [[ -z "$stats" ]]; then
+    return
+  fi
+
+  local total=0
+  while IFS= read -r pct; do
+    pct="${pct%%%}"
+    total="$(echo "$total + $pct" | bc)"
+  done <<< "$stats"
+
+  local total_int
+  total_int="$(echo "$total" | awk -F. '{print $1}')"
+  local threshold_int
+  threshold_int="$(echo "$cpu_threshold" | awk -F. '{print $1}')"
+
+  if (( total_int >= threshold_int )); then
+    if should_alert "cpu"; then
+      notify "Podman CPU Alert" "Total CPU: ${total}% / ${cpu_threshold}% (${ncpus} cores x ${CPU_THRESHOLD_PCT}%)"
+    fi
+  else
+    log "cpu OK: ${total}% / ${cpu_threshold}% (${ncpus} cores)"
+  fi
+}
+
+# --- Disk check ---
+check_disk() {
+  local df_output
+  df_output="$(podman system df --format '{{.Type}}\t{{.Size}}\t{{.Reclaimable}}' 2>/dev/null)" || return
+
+  if [[ -z "$df_output" ]]; then
+    return
+  fi
+
+  # Check reclaimable space as an indicator of bloat
+  local total_images=0 reclaimable_images=0
+  while IFS=$'\t' read -r type size reclaimable; do
+    if [[ "$type" == "Images" ]]; then
+      log "disk: Images size=${size}, reclaimable=${reclaimable}"
+      # Parse reclaimable percentage
+      local reclaim_pct
+      reclaim_pct="$(echo "$reclaimable" | grep -oE '[0-9]+%' | tr -d '%')"
+      if [[ -n "$reclaim_pct" ]] && (( reclaim_pct >= DISK_THRESHOLD )); then
+        if should_alert "disk"; then
+          notify "Podman Disk Alert" "Images: ${size}, ${reclaimable} reclaimable. Run: podman system prune"
+        fi
+        return
+      fi
+    fi
+  done <<< "$df_output"
+
+  log "disk OK"
+}
+
+# --- Container restart/exit check ---
+check_containers() {
+  local exited
+  exited="$(podman ps --filter 'status=exited' --format '{{.Names}}\t{{.Status}}' 2>/dev/null)" || return
+
+  if [[ -z "$exited" ]]; then
+    log "containers OK: no exited containers"
+    return
+  fi
+
+  local count
+  count="$(echo "$exited" | wc -l | xargs)"
+  local names
+  names="$(echo "$exited" | awk -F'\t' '{print $1}' | head -3 | paste -sd ', ' -)"
+
+  if should_alert "containers"; then
+    notify "Podman Container Alert" "${count} exited container(s): ${names}"
+  fi
+}
+
+# --- Run all checks ---
+log "--- check start ---"
+check_memory
+check_cpu
+check_disk
+check_containers
+log "--- check end ---"

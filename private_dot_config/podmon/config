@@ -1,0 +1,19 @@
+# podmon - Podman resource monitor configuration
+#
+# Memory threshold (percentage of Podman machine allocated memory)
+MEM_THRESHOLD=70
+
+# Disk threshold (percentage of Podman machine disk usage)
+DISK_THRESHOLD=80
+
+# CPU threshold (percentage of Podman machine allocated cores)
+# e.g. 80 means alert when total CPU usage exceeds 80% of all allocated cores
+# (4 cores allocated, threshold 80% → alert at 320% total CPU)
+CPU_THRESHOLD_PCT=80
+
+# Check interval in seconds (used by launchd StartInterval)
+# Changing this requires re-running: chezmoi apply
+CHECK_INTERVAL=60
+
+# Cooldown: suppress duplicate alerts for N seconds
+ALERT_COOLDOWN=300
