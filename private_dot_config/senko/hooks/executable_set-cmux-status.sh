@@ -4,8 +4,8 @@
 set -euo pipefail
 
 INPUT=$(cat -)
-TASK_ID=$(echo "$INPUT" | jq -r '.task.id')
-TASK_TITLE=$(echo "$INPUT" | jq -r '.task.title')
+TASK_ID=$(echo "$INPUT" | jq -r '.event.task.id')
+TASK_TITLE=$(echo "$INPUT" | jq -r '.event.task.title')
 
 PROJECT_NAME="${SENKO_PROJECT_NAME:-}"
 if [[ -z "$PROJECT_NAME" ]]; then
