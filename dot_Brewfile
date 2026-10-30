@@ -1,11 +1,14 @@
 tap "nikitabobko/tap"
-brew "chezmoi"
 brew "fish"
 brew "mise"
 brew "podman"
+brew "podman-compose"
 cask "nikitabobko/tap/aerospace"
-cask "font-udev-gothic-nf"
-cask "ghostty"
+cask "chatgpt"
+cask "discord"
+cask "font-hackgen"
+cask "font-hackgen-nerd"
+cask "font-source-han-code-jp"
 cask "raycast", args: { appdir: "/Applications" }
 cask "slack", args: { appdir: "/Applications" }
 cask "zed"

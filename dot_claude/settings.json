@@ -1,67 +1,13 @@
 {
-  "permissions": {
-    "allow": [
-      "WebFetch",
-      "WebSearch",
-      "Bash(git *)",
-      "Read",
-      "Glob",
-      "Grep"
-    ],
-    "deny": [
-      "Bash(git push --force*)",
-      "Bash(git push -f*)",
-      "Bash(git reset --hard*)",
-      "Bash(git clean -f*)",
-      "Bash(git checkout -- .*)",
-      "Bash(git restore .*)",
-      "Bash(git branch -D*)",
-      "Bash(git stash drop*)"
-    ]
+  "model": "opus",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    }
   },
-  "hooks": {
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/slack-notify-notification.sh"
-          },
-          {
-            "type": "command",
-            "command": "[ -f /run/.containerenv ] && JSON=$(cat) && TITLE=$(echo \"$JSON\" | jq -r '.title // .notification_type // \"Notification\"') && MSG=$(echo \"$JSON\" | jq -r '.message // \"\"' | head -c 200) && printf '\\e]777;notify;Claude [%s];%s\\a' \"$TITLE\" \"$MSG\" > /dev/tty"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/slack-notify-stop.sh"
-          },
-          {
-            "type": "command",
-            "command": "[ -f /run/.containerenv ] && MSG=$(cat | jq -r '.last_assistant_message // .stop_hook_reason // \"Done\"' | head -c 200) && printf '\\e]777;notify;Claude;%s\\a' \"$MSG\" > /dev/tty"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/post-bash-pr-review.sh",
-            "timeout": 300,
-            "async": true
-          }
-        ]
-      }
-    ]
-  },
+  "tui": "fullscreen",
+  "theme": "dark",
+  "agentPushNotifEnabled": true,
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true
@@ -73,6 +19,5 @@
         "repo": "anthropics/skills"
       }
     }
-  },
-  "skipDangerousModePermissionPrompt": true
+  }
 }
