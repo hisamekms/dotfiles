@@ -1,7 +1,7 @@
 [tools]
 aws-cli = { version = "latest", symlink_bins = "true" }
 bat = "latest"
-bun = "latest"
+bun = "1.4.4"
 "cargo:cargo-nextest" = "latest"
 chezmoi = "latest"
 d2 = "latest"
@@ -13,7 +13,7 @@ ghq = "latest"
 "github:crate-ci/committed" = "latest"
 "github:hisamekms/dcw" = "0.5.1"
 "github:hisamekms/secretmux" = "0.2.1"
-"github:hisamekms/senko" = "0.13.0"
+"github:hisamekms/senko" = "0.51.0"
 "github:j178/prek" = "latest"
 "github:taiki-e/cargo-llvm-cov" = "latest"
 go = "latest"
@@ -26,6 +26,8 @@ neovim = "latest"
 node = "latest"
 "npm:@devcontainers/cli" = "latest"
 "npm:@openai/codex" = "latest"
+"npm:@playwright/cli" = "latest"
+"npm:domaintrail" = "latest"
 rg = "latest"
 sccache = "latest"
 starship = "latest"
@@ -39,3 +41,4 @@ MISE_NPM_PACKAGE_MANAGER = "bun"
 [settings]
 idiomatic_version_file_enable_tools = []
 minimum_release_age = "3d"
+minimum_release_age_excludes = ["npm:domaintrail"]
