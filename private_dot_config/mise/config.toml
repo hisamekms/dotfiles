@@ -2,7 +2,6 @@
 aws-cli = { version = "latest", symlink_bins = "true" }
 bat = "latest"
 bun = "1.4.4"
-"cargo:cargo-nextest" = "latest"
 chezmoi = "latest"
 d2 = "latest"
 direnv = "latest"
